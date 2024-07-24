@@ -16,7 +16,16 @@ const muinos = defineCollection({
   }),
 })
 
+const entrevistas = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    updatedDate: z.date(),
+  }),
+})
+
 export const collections = {
   entradas: entradas,
   muinos: muinos,
+  entrevistas: entrevistas,
 }
