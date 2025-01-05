@@ -1,0 +1,22 @@
+---
+import Footer from '../components/Footer.astro'
+import Header from '../components/Header.astro'
+import Layout from './Layout.astro'
+export const frontmatter = { title: '' }
+---
+
+<Layout title={frontmatter.title}>
+  <div class="flex min-h-screen flex-col">
+    <Header showBackButton={true} backHref="/" />
+
+    <main class="flex-grow">
+      <div class="mx-auto max-w-3xl p-6 pt-8">
+        <h1 class="text-3xl font-bold text-gray-900">{frontmatter.title}</h1>
+        <div class="prose prose-lg prose-gray mt-4 max-w-none">
+          <slot />
+        </div>
+      </div>
+    </main>
+    <Footer />
+  </div>
+</Layout>

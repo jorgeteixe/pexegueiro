@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets'
+import bookSvg from '../assets/images/book.svg'
+
+const showBackButton = Astro.props.showBackButton || false
+const backHref = Astro.props.backHref || '/'
+---
+
+<header class="w-full bg-gray-100 py-4">
+  <div class="mx-auto flex max-w-3xl items-center justify-between px-4 md:px-6">
+    <!-- Logo & Title -->
+    <div class="flex items-center space-x-4">
+      <Image src={bookSvg} alt="Logo" width={40} height={40} class="shrink-0" />
+      <div class="flex flex-col">
+        <h1 class="text-lg font-bold text-gray-900">A Galicia muiñeira</h1>
+        <h2 class="pr-2 text-sm text-gray-700">
+          E as xeracións que xiraron ao son dos muiños
+        </h2>
+      </div>
+    </div>
+
+    <!-- Voltar Button (Optional) -->
+    {
+      showBackButton && (
+        <a
+          href={backHref}
+          class="flex items-center space-x-2 rounded-lg border border-gray-300 px-3 py-1 text-sm text-gray-800 hover:bg-gray-200"
+        >
+          <span>←</span>
+          <span>Voltar</span>
+        </a>
+      )
+    }
+  </div>
+</header>

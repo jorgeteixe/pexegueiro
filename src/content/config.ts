@@ -13,6 +13,14 @@ const muinos = defineCollection({
   schema: z.object({
     name: z.string(),
     updatedDate: z.date(),
+    ubicacion: z.string(),
+    lugar: z.string(),
+    coordenadas: z.array(z.string()),
+    tipoloxia: z.string(),
+    propiedade: z.string(),
+    estado: z.string(),
+    enUsoAta: z.date().optional(),
+    outrosNomes: z.string().optional(),
   }),
 })
 

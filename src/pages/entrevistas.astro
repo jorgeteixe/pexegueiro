@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '../layouts/Layout.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+
+const entrevistasEntries = await getCollection('entrevistas')
+---
+
+<Layout title="Inventario de Entrevistas">
+  <div class="flex min-h-screen flex-col">
+    <Header showBackButton={true} backHref="/" />
+    <main class="flex-grow">
+      <div class="mx-auto max-w-3xl p-6 pt-8">
+        <h1 class="mb-6 text-3xl font-bold text-gray-900">
+          Inventario de Entrevistas
+        </h1>
+
+        <!-- Inventory List -->
+        <ul class="space-y-4">
+          {
+            entrevistasEntries.map((entrevista) => (
+              <li class="border-b pb-4">
+                <a
+                  href={`/entrevistas/${entrevista.slug}`}
+                  class="text-lg font-semibold text-blue-600 hover:underline"
+                >
+                  {entrevista.data.title}
+                </a>
+                <p class="text-gray-600">
+                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                  Temporibus, atque?
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </main>
+    <Footer />
+  </div>
+</Layout>

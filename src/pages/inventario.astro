@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '../layouts/Layout.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+
+const muinosEntries = await getCollection('muinos')
+---
+
+<Layout title="Inventario de Muíños">
+  <div class="flex min-h-screen flex-col">
+    <Header showBackButton={true} backHref="/" />
+    <main class="flex-grow">
+      <div class="mx-auto max-w-3xl p-6 pt-8">
+        <!-- Title & Back Button -->
+        <div class="mb-6 flex items-center justify-between">
+          <h1 class="text-3xl font-bold text-gray-900">Inventario de Muíños</h1>
+        </div>
+
+        <!-- Inventory List -->
+        <ul class="space-y-4">
+          {
+            muinosEntries.map((muino) => (
+              <li class="border-b pb-4">
+                <a
+                  href={`/muinos/${muino.slug}`}
+                  class="text-lg font-semibold text-blue-600 hover:underline"
+                >
+                  {muino.data.name}
+                </a>
+                <p class="text-gray-600">
+                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                  Temporibus, atque?
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </main>
+    <Footer />
+  </div>
+</Layout>

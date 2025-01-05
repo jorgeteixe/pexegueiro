@@ -1,8 +1,87 @@
 ---
-import UnderConstruction from '../components/UnderConstruction.astro'
+import { Image } from 'astro:assets'
+import { Icon } from 'astro-icon/components'
+
 import Layout from '../layouts/Layout.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+
+import bookSvg from '../assets/images/book.svg'
+
+const menuItems = [
+  { name: 'Mapa', icon: 'mdi:map', href: '/mapa' },
+  { name: 'Inventario', icon: 'game-icons:water-mill', href: '/inventario' },
+  { name: 'Entrevistas', icon: 'mdi:account', href: '/entrevistas' },
+  { name: 'Documental', icon: 'mdi:video', href: '#' },
+]
 ---
 
-<Layout title="Pexegueiro - Sitio en construcción">
-  <UnderConstruction />
+<Layout
+  title="A Galicia muiñeira: e as xeracións que xiraron ao son dos muiños"
+>
+  <div class="flex min-h-screen flex-col">
+    <Header />
+    <main class="flex-grow">
+      <div
+        class="mx-auto flex max-w-3xl flex-col items-center space-y-10 p-6 pt-16 text-center"
+      >
+        <!-- Book Cover -->
+        <Image
+          src={bookSvg}
+          alt="Book Cover"
+          width={300}
+          height={400}
+          class="mb-6"
+        />
+
+        <!-- Title -->
+        <div class="space-y-2">
+          <h1 class="text-3xl font-bold text-gray-900">A Galicia muiñeira</h1>
+          <h2 class="text-xl text-gray-700">
+            E as xeracións que xiraron ao son dos muiños
+          </h2>
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-4 text-gray-600">
+          <p>
+            Coas ferramentas interactivas desta web queremos que descrubas ós
+            muíños e outros rincóns de interese. A través dos mapas poderás ver
+            a ubicación exacta dos muíños e os sendeiros antigos e novos que
+            comunican peonilmente O Viso, Cesantes e o centro da Vila. Os muíños
+            son os testigos mudos de todo un mundo xa perdido, pero que
+            conformou o que somos hoxe. Grazas a fariña dos muíños, os cativos
+            de onte, os nosos avós de hoxe, sobreviviron á fame.
+          </p>
+          <p>
+            Tamén poderás ver as entrevistas das persoas maiores que están
+            vinculadas dalgún xeito ao patrimonio cultural. Consideramos que o
+            testimonio destas persoas son un xeito de valorar os seus saberes,
+            pero tamén de agradecer e honrar as xeracións pasadas polos seus
+            esforzos.
+          </p>
+          <p>
+            Entre os teus ollos tes un "libro vivo", é dicir, que non está
+            rematado. Pode que ti sexas unha das persoas que fagas crecer este
+            fermoso proxecto.
+          </p>
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="mt-6 grid grid-cols-2 gap-10 lg:grid-cols-4">
+          {
+            menuItems.map((item) => (
+              <a href={item.href} class="flex flex-col items-center space-y-2">
+                <div class="flex h-24 w-24 items-center justify-center rounded-full bg-gray-200 shadow-md">
+                  <Icon name={item.icon} class="h-12 w-12 text-gray-700" />
+                </div>
+                <p class="font-medium text-gray-700">{item.name}</p>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </main>
+    <Footer />
+  </div>
 </Layout>
