@@ -1,6 +1,9 @@
 ---
 import { getCollection } from 'astro:content'
+import { Icon } from 'astro-icon/components'
 import Layout from '../../layouts/Layout.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
 
 export async function getStaticPaths() {
   const entradasEntries = await getCollection('entradas')
@@ -15,8 +18,60 @@ const { Content } = await entry.render()
 ---
 
 <Layout title={entry.data.title}>
-  <p>Entrada</p>
+  <div class="flex min-h-screen flex-col">
+    <Header />
+    
+    <main class="flex-grow bg-gray-50">
+      <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+        
+        <!-- Header Section -->
+        <div class="mb-8">
+          <div class="bg-white rounded-lg border border-gray-200 p-8">
+            <div class="flex items-start justify-between mb-6">
+              <div class="flex-1">
+                <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl mb-2">
+                  {entry.data.title}
+                </h1>
+                
+                <!-- Updated Date -->
+                <div class="text-sm text-gray-500 flex items-center">
+                  <Icon name="mdi:update" class="h-4 w-4 mr-1" />
+                  Actualizado o {entry.data.updatedDate.toLocaleDateString('gl-ES')}
+                </div>
+              </div>
+              
+              <!-- Entry Badge -->
+              <div class="flex-shrink-0">
+                <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  <Icon name="mdi:book-open" class="h-4 w-4 mr-2" />
+                  Entrada
+                </div>
+              </div>
+            </div>
 
-  <h1 class="text-3xl">{entry.data.title}</h1>
-  <Content />
+            <!-- Back to entries -->
+            <div>
+              <a 
+                href="/entradas" 
+                class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Icon name="mdi:arrow-left" class="h-4 w-4 mr-1" />
+                Volver ás entradas
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="bg-white rounded-lg border border-gray-200 p-8">
+          <div class="prose prose-lg prose-gray max-w-none">
+            <Content />
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <Footer />
+  </div>
 </Layout>

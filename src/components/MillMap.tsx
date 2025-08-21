@@ -44,14 +44,10 @@ const MillMap = ({ coordinates, name, location }: MillMapProps) => {
       minZoom: 10,
     }).addTo(map)
 
-    // Add simple red circle marker
-    L.circleMarker([coordinates.lat, coordinates.lng], {
-      color: '#dc2626',
-      fillColor: '#dc2626',
-      fillOpacity: 0.8,
-      radius: 8,
-      weight: 2,
-    }).addTo(map)
+    // Add default marker
+    L.marker([coordinates.lat, coordinates.lng])
+      .addTo(map)
+      .bindPopup(`<strong>${name}</strong><br/>${location}`)
 
     mapInstanceRef.current = map
 

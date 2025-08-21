@@ -1,33 +1,131 @@
 ---
-const footerLinks = [
+import { Icon } from 'astro-icon/components'
+
+const navigationLinks = [
+  { name: 'Inventario', href: '/inventario' },
+  { name: 'Entrevistas', href: '/entrevistas' },
+  { name: 'Entradas', href: '/entradas' },
+]
+
+const projectLinks = [
   { name: 'Sobre o proxecto', href: '/sobre-o-proxecto' },
   { name: 'Aviso legal', href: '/aviso-legal' },
   { name: 'Política de privacidade', href: '/politica-privacidade' },
 ]
+
+const socialLinks = [
+  { name: 'Facebook', href: '#', icon: 'mdi:facebook' },
+  { name: 'Instagram', href: '#', icon: 'mdi:instagram' },
+  { name: 'Email', href: '#', icon: 'mdi:email' },
+]
 ---
 
-<footer class="w-full border-t border-gray-200 bg-gray-50">
-  <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-    <div class="flex flex-col items-center space-y-6">
-      <!-- Links -->
-      <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
-        {
-          footerLinks.map((link) => (
-            <a
-              href={link.href}
-              class="text-gray-600 transition-colors hover:text-gray-900 hover:underline"
-            >
-              {link.name}
-            </a>
-          ))
-        }
+<footer class="w-full border-t border-gray-200 bg-gray-100">
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="grid gap-8 md:grid-cols-4">
+      <!-- About Section -->
+      <div class="md:col-span-2">
+        <h3 class="mb-4 text-lg font-semibold text-gray-900">
+          A Galicia muiñeira
+        </h3>
+        <p class="mb-4 text-sm leading-relaxed text-gray-600">
+          Un proxecto para preservar e divulgar o patrimonio muiñeiro de
+          Cesantes, documentando a historia dos muíños que formaron parte da
+          vida cotiá das xeracións pasadas.
+        </p>
+        <div class="text-sm text-gray-500">
+          <p class="font-medium">Obradoiro de Estudos Locais Fernando Monroy</p>
+        </div>
       </div>
 
-      <!-- Association Name -->
-      <div class="text-center">
-        <p class="text-sm text-gray-500">
-          Obradoiro de Estudos Locais Fernando Monroy
-        </p>
+      <!-- Navigation Links -->
+      <div>
+        <h3
+          class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900"
+        >
+          Navegación
+        </h3>
+        <ul class="space-y-3">
+          {
+            navigationLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-sm text-gray-600 transition-colors hover:text-gray-900"
+                >
+                  {link.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Project Links -->
+      <div>
+        <h3
+          class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900"
+        >
+          Proxecto
+        </h3>
+        <ul class="mb-6 space-y-3">
+          {
+            projectLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-sm text-gray-600 transition-colors hover:text-gray-900"
+                >
+                  {link.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <!-- Social Links -->
+        <div>
+          <h4
+            class="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-900"
+          >
+            Séguenos
+          </h4>
+          <div class="flex space-x-3">
+            {
+              socialLinks.map((social) => (
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="p-1 text-gray-400 transition-colors hover:text-gray-600"
+                  aria-label={social.name}
+                >
+                  <Icon name={social.icon} class="h-5 w-5" />
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="mt-12 border-t border-gray-200 pt-8">
+      <div
+        class="flex flex-col items-center space-y-4 sm:flex-row sm:justify-between sm:space-y-0"
+      >
+        <div class="text-sm text-gray-500">
+          © 2024 Obradoiro de Estudos Locais Fernando Monroy. Todos os dereitos
+          reservados.
+        </div>
+        <div class="text-sm text-gray-400">
+          Web desenvolvida por <a
+            href="https://teixe.es"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-gray-600 hover:underline">Jorge Teixeira</a
+          >
+        </div>
       </div>
     </div>
   </div>

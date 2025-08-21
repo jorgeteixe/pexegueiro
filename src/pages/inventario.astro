@@ -8,6 +8,9 @@ import Footer from '../components/Footer.astro'
 
 const muinosEntries = await getCollection('muinos')
 
+// Load all available images using import.meta.glob (reliable in production)
+const allImages = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/muinos/**/*.{jpeg,jpg,png,gif}')
+
 // Sort muinos by name and load only the first image for each
 const sortedMuinos = await Promise.all(
   muinosEntries.map(async (muino) => {
@@ -15,8 +18,9 @@ const sortedMuinos = await Promise.all(
     if (muino.data.images && muino.data.images.length > 0) {
       try {
         const firstImagePath = muino.data.images[0]
-        const { default: image } = await import(firstImagePath)
-        firstImage = image
+        if (allImages[firstImagePath]) {
+          firstImage = (await allImages[firstImagePath]()).default
+        }
       } catch (e) {
         console.warn(`Could not load image for ${muino.data.name}:`, e)
       }

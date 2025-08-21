@@ -1,113 +1,161 @@
 ---
+import { getCollection } from 'astro:content'
 import { Image } from 'astro:assets'
-import { Icon } from 'astro-icon/components'
-
 import Layout from '../layouts/Layout.astro'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
+import GlobalMap from '../components/GlobalMap.tsx'
 
 import bookSvg from '../assets/images/book.svg'
 
-const menuItems = [
-  { name: 'Mapa', icon: 'mdi:map', href: '/mapa', description: 'Explora os muíños no mapa interactivo' },
-  { name: 'Inventario', icon: 'game-icons:water-mill', href: '/inventario', description: 'Descubre o patrimonio muiñeiro' },
-  { name: 'Entrevistas', icon: 'mdi:account', href: '/entrevistas', description: 'Escoita as voces da tradición' },
-  { name: 'Documental', icon: 'mdi:video', href: '#', description: 'Próximamente dispoñible' },
-]
+// Get mills data for the map
+const muinosEntries = await getCollection('muinos')
+
+// Load all available images using import.meta.glob
+const allImages = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/muinos/**/*.{jpeg,jpg,png,gif}')
+
+const millsForMap = await Promise.all(
+  muinosEntries.map(async (muino) => {
+    let firstImage = null
+    if (muino.data.images && muino.data.images.length > 0) {
+      try {
+        const firstImagePath = muino.data.images[0]
+        if (allImages[firstImagePath]) {
+          firstImage = (await allImages[firstImagePath]()).default
+        }
+      } catch (e) {
+        console.warn(`Could not load image for ${muino.data.name}:`, e)
+      }
+    }
+    return {
+      slug: muino.slug,
+      name: muino.data.name,
+      lugar: muino.data.lugar,
+      coordinates: muino.data.coordenadas,
+      estado: muino.data.estado,
+      tipoloxia: muino.data.tipoloxia,
+      firstImage: firstImage ? {
+        src: firstImage.src,
+        width: firstImage.width,
+        height: firstImage.height
+      } : null,
+    }
+  })
+)
 ---
 
-<Layout title="A Galicia muiñeira: e as xeracións que xiraron ao son dos muiños">
+<Layout
+  title="A Galicia muiñeira: e as xeracións que xiraron ao son dos muiños"
+>
   <div class="flex min-h-screen flex-col">
     <Header />
-    
+
     <main class="flex-grow bg-gray-50">
       <!-- Hero Section -->
       <section class="py-12 sm:py-16">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
-          <div class="grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
-            
+          <div class="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
             <!-- Content -->
             <div class="text-center lg:text-left">
-              <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">
+              <h1
+                class="text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl"
+              >
                 A Galicia muiñeira
               </h1>
               <h2 class="mt-3 text-lg text-gray-600 sm:text-xl">
                 E as xeracións que xiraron ao son dos muiños
               </h2>
-              
-              <div class="mt-8 space-y-6 text-gray-600 leading-relaxed">
+
+              <div class="mt-8 space-y-6 leading-relaxed text-gray-600">
                 <p>
-                  Coas ferramentas interactivas desta web queremos que descrubas ós muíños e outros rincóns de interese. A través dos mapas poderás ver a ubicación exacta dos muíños e os sendeiros antigos e novos que comunican peonilmente O Viso, Cesantes e o centro da Vila.
+                  Este sitio web é o complemento dixital do libro "A Galicia
+                  muiñeira". Ao longo das páxinas do libro atoparás códigos QR
+                  que che levarán directamente aos contidos específicos desta
+                  web.
                 </p>
                 <p>
-                  Os muíños son os testigos mudos de todo un mundo xa perdido, pero que conformou o que somos hoxe. Grazas a fariña dos muíños, os cativos de onte, os nosos avós de hoxe, sobreviviron á fame.
+                  Coas ferramentas interactivas desta web queremos que descrubas
+                  ós muíños e outros rincóns de interese. A través dos mapas
+                  poderás ver a ubicación exacta dos muíños e os sendeiros
+                  antigos e novos que comunican peonilmente O Viso, Cesantes e o
+                  centro da Vila.
+                </p>
+                <p>
+                  Os muíños son os testigos mudos de todo un mundo xa perdido,
+                  pero que conformou o que somos hoxe. Grazas a fariña dos
+                  muíños, os cativos de onte, os nosos avós de hoxe,
+                  sobreviviron á fame.
                 </p>
               </div>
             </div>
-            
-            <!-- Book Cover -->
+
+            <!-- Book Cover Placeholder -->
             <div class="flex justify-center">
-              <div class="rounded-2xl bg-white p-6 shadow-lg">
-                <Image
-                  src={bookSvg}
-                  alt="A Galicia muiñeira - Book Cover"
-                  width={280}
-                  height={350}
-                  class="drop-shadow-sm"
-                />
-              </div>
+              <Image
+                src={bookSvg}
+                alt="A Galicia muiñeira - Book Placeholder"
+                width={280}
+                height={350}
+              />
             </div>
-            
           </div>
         </div>
       </section>
 
-      <!-- Navigation Cards -->
+      <!-- Map Section -->
       <section class="py-12">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
           <div class="mb-8 text-center">
-            <h3 class="text-2xl font-bold text-gray-900">Descubre o patrimonio muiñeiro</h3>
-            <p class="mt-2 text-gray-600">Explora as diferentes seccións do proxecto</p>
+            <h3 class="text-2xl font-bold text-gray-900">Mapa dos muíños</h3>
+            <p class="mt-2 text-gray-600">
+              Fai clic sobre calquera marcador para ver máis información
+            </p>
           </div>
-          
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {
-              menuItems.map((item) => (
-                <a 
-                  href={item.href} 
-                  class="group rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:ring-gray-300"
-                >
-                  <div class="flex flex-col items-center text-center">
-                    <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-gray-50 group-hover:bg-gray-100 transition-colors">
-                      <Icon name={item.icon} class="h-8 w-8 text-gray-700" />
-                    </div>
-                    <h4 class="font-semibold text-gray-900 mb-2">{item.name}</h4>
-                    <p class="text-sm text-gray-500">{item.description}</p>
-                  </div>
-                </a>
-              ))
-            }
+
+          <!-- Map -->
+          <div
+            class="overflow-hidden rounded-lg border border-gray-200 bg-white"
+          >
+            <GlobalMap mills={millsForMap} client:only="react" />
           </div>
         </div>
       </section>
 
-      <!-- Living Book Section -->
-      <section class="py-12 bg-white">
-        <div class="mx-auto max-w-4xl px-4 sm:px-6 text-center">
-          <div class="rounded-2xl bg-gray-50 p-8">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Un "libro vivo"</h3>
-            <p class="text-gray-600 leading-relaxed">
-              Entre os teus ollos tes un "libro vivo", é dicir, que non está rematado. 
-              Pode que ti sexas unha das persoas que fagas crecer este fermoso proxecto. 
-              Consideramos que o testimonio destas persoas son un xeito de valorar os seus saberes, 
-              pero tamén de agradecer e honrar as xeracións pasadas polos seus esforzos.
-            </p>
+      <!-- Content Section -->
+      <section class="py-16">
+        <div class="mx-auto max-w-4xl px-4 sm:px-6">
+          <div class="grid gap-12 md:gap-16">
+            <div class="border-l-4 border-gray-300 pl-8">
+              <h3 class="mb-6 text-2xl font-bold text-gray-900 tracking-tight">Como usar esta web</h3>
+              <p class="text-lg leading-relaxed text-gray-600">
+                Este sitio web complementa o libro físico "A Galicia muiñeira". Mentres lees o libro, 
+                atoparás códigos QR que che levarán directamente a contidos específicos desta web: 
+                mapas detallados, fotografías históricas e entrevistas con persoas da zona.
+              </p>
+            </div>
+
+            <div class="border-l-4 border-gray-300 pl-8">
+              <h3 class="mb-6 text-2xl font-bold text-gray-900 tracking-tight">Explora o patrimonio</h3>
+              <p class="text-lg leading-relaxed text-gray-600">
+                Cada muíño ten a súa propia páxina con información detallada, imaxes e a súa 
+                localización exacta. Podes navegar polo inventario completo ou usar o mapa 
+                interactivo para descubrir os muíños máis próximos a ti.
+              </p>
+            </div>
+
+            <div class="border-l-4 border-gray-300 pl-8">
+              <h3 class="mb-6 text-2xl font-bold text-gray-900 tracking-tight">Testimonio oral</h3>
+              <p class="text-lg leading-relaxed text-gray-600">
+                As entrevistas recollen a memoria das persoas que viviron a época dos muíños 
+                en funcionamento, preservando así un patrimonio inmaterial único que forma 
+                parte da nosa identidade cultural.
+              </p>
+            </div>
           </div>
         </div>
       </section>
-      
     </main>
-    
+
     <Footer />
   </div>
 </Layout>
