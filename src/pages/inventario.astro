@@ -1,43 +1,134 @@
 ---
 import { getCollection } from 'astro:content'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
 import Layout from '../layouts/Layout.astro'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 
 const muinosEntries = await getCollection('muinos')
+
+// Sort muinos by name and load only the first image for each
+const sortedMuinos = await Promise.all(
+  muinosEntries.map(async (muino) => {
+    let firstImage = null
+    if (muino.data.images && muino.data.images.length > 0) {
+      try {
+        const firstImagePath = muino.data.images[0]
+        const { default: image } = await import(firstImagePath)
+        firstImage = image
+      } catch (e) {
+        console.warn(`Could not load image for ${muino.data.name}:`, e)
+      }
+    }
+    return {
+      ...muino,
+      firstImage,
+    }
+  })
+).then((results) =>
+  results.sort((a, b) => a.data.name.localeCompare(b.data.name))
+)
 ---
 
 <Layout title="Inventario de Muíños">
   <div class="flex min-h-screen flex-col">
     <Header showBackButton={true} backHref="/" />
-    <main class="flex-grow">
-      <div class="mx-auto max-w-3xl p-6 pt-8">
-        <!-- Title & Back Button -->
-        <div class="mb-6 flex items-center justify-between">
-          <h1 class="text-3xl font-bold text-gray-900">Inventario de Muíños</h1>
+
+    <main class="flex-grow bg-gray-50">
+      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <!-- Header Section -->
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Inventario de Muíños
+          </h1>
+          <p class="mt-2 text-gray-600">
+            Descobre o patrimonio muiñeiro de Cesantes
+          </p>
         </div>
 
-        <!-- Inventory List -->
-        <ul class="space-y-4">
+        <!-- Mills Grid -->
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {
-            muinosEntries.map((muino) => (
-              <li class="border-b pb-4">
-                <a
-                  href={`/muinos/${muino.slug}`}
-                  class="text-lg font-semibold text-blue-600 hover:underline"
-                >
-                  {muino.data.name}
-                </a>
-                <p class="text-gray-600">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Temporibus, atque?
-                </p>
-              </li>
-            ))
+            sortedMuinos.map((muino) => {
+              // Determine status color
+              const estado = muino.data.estado.split(',')[0].trim()
+              let statusColor = 'bg-gray-100 text-gray-800'
+              if (estado.includes('Conservado'))
+                statusColor = 'bg-green-100 text-green-800'
+              else if (estado.includes('ruína'))
+                statusColor = 'bg-orange-100 text-orange-800'
+              else if (estado.includes('Desaparecido'))
+                statusColor = 'bg-red-100 text-red-800'
+
+              return (
+                <article class="group overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-gray-300">
+                  <a href={`/muinos/${muino.slug}`}>
+                    {muino.firstImage ? (
+                      <div class="aspect-video w-full overflow-hidden">
+                        <Image
+                          src={muino.firstImage}
+                          alt={muino.data.name}
+                          width={400}
+                          height={225}
+                          class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                    ) : (
+                      <div class="flex aspect-video w-full items-center justify-center bg-gray-100">
+                        <Icon
+                          name="game-icons:water-mill"
+                          class="h-12 w-12 text-gray-400"
+                        />
+                      </div>
+                    )}
+
+                    <div class="p-6">
+                      <div class="mb-3 flex items-start justify-between">
+                        <h3 class="flex-1 text-lg font-semibold text-gray-900 group-hover:text-blue-600">
+                          {muino.data.name}
+                        </h3>
+
+                        <span
+                          class={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor} ml-2 flex-shrink-0`}
+                        >
+                          {estado}
+                        </span>
+                      </div>
+
+                      <div class="mb-4 space-y-2">
+                        <div class="flex items-center text-sm text-gray-500">
+                          <Icon name="mdi:map-marker" class="mr-1 h-4 w-4" />
+                          <span>{muino.data.lugar}</span>
+                        </div>
+
+                        <div class="flex items-center text-sm text-gray-500">
+                          <Icon name="mdi:cog" class="mr-1 h-4 w-4" />
+                          <span>{muino.data.tipoloxia}</span>
+                        </div>
+
+                        <div class="flex items-center text-sm text-gray-500">
+                          <Icon name="mdi:account" class="mr-1 h-4 w-4" />
+                          <span>{muino.data.propiedade}</span>
+                        </div>
+                      </div>
+
+                      <div class="border-t border-gray-100 pt-3">
+                        <p class="text-xs text-gray-400">
+                          Actualizado:{' '}
+                          {muino.data.updatedDate.toLocaleDateString('gl-ES')}
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              )
+            })
           }
-        </ul>
+        </div>
       </div>
     </main>
+
     <Footer />
   </div>
 </Layout>

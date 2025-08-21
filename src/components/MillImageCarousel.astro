@@ -1,0 +1,22 @@
+---
+import ImageCarouselClient from './ImageCarouselClient.tsx'
+
+interface Props {
+  images: any[]
+  alt: string
+}
+
+const { images, alt } = Astro.props
+
+// Process images for the client component
+const processedImages = images.map((img, index) => ({
+  src: img.src,
+  width: img.width,
+  height: img.height,
+  alt: `${alt} - Imaxe ${index + 1}`,
+  thumbnail: img.src, // Use same src for thumbnail, client will handle sizing
+}))
+---
+
+<!-- React component with processed image data -->
+<ImageCarouselClient images={processedImages} alt={alt} client:only="react" />

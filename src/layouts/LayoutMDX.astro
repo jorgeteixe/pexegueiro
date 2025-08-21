@@ -9,14 +9,22 @@ export const frontmatter = { title: '' }
   <div class="flex min-h-screen flex-col">
     <Header showBackButton={true} backHref="/" />
 
-    <main class="flex-grow">
-      <div class="mx-auto max-w-3xl p-6 pt-8">
-        <h1 class="text-3xl font-bold text-gray-900">{frontmatter.title}</h1>
-        <div class="prose prose-lg prose-gray mt-4 max-w-none">
-          <slot />
+    <main class="flex-grow bg-gray-50">
+      <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="rounded-xl bg-white p-6 shadow-sm sm:p-8">
+          <header class="mb-8 border-b border-gray-200 pb-6">
+            <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+              {frontmatter.title}
+            </h1>
+          </header>
+          
+          <article class="prose prose-lg prose-gray max-w-none">
+            <slot />
+          </article>
         </div>
       </div>
     </main>
+    
     <Footer />
   </div>
 </Layout>

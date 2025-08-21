@@ -1,8 +1,13 @@
 ---
 import { getCollection } from 'astro:content'
+import { Icon } from 'astro-icon/components'
 import Layout from '../../layouts/Layout.astro'
 import Header from '../../components/Header.astro'
 import Footer from '../../components/Footer.astro'
+import MillImageCarousel from '../../components/MillImageCarousel.astro'
+import MillMap from '../../components/MillMap.tsx'
+import InterviewPreview from '../../components/InterviewPreview.astro'
+
 
 export async function getStaticPaths() {
   const muinosEntries = await getCollection('muinos')
@@ -14,65 +19,189 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props
 const { Content } = await entry.render()
+
+// Dynamically import all images
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/muinos/**/*.{jpeg,jpg,png,gif}')
+
+// Determine status color and icon
+const estado = entry.data.estado.split(',')[0].trim()
+let statusColor = 'bg-gray-100 text-gray-800'
+let statusIcon = 'mdi:help-circle'
+if (estado.includes('Conservado')) {
+  statusColor = 'bg-green-100 text-green-800'
+  statusIcon = 'mdi:check-circle'
+} else if (estado.includes('ruína')) {
+  statusColor = 'bg-orange-100 text-orange-800'
+  statusIcon = 'mdi:alert-circle'
+} else if (estado.includes('Desaparecido')) {
+  statusColor = 'bg-red-100 text-red-800'
+  statusIcon = 'mdi:close-circle'
+}
+
+// Get mill images from frontmatter - use empty array if no images
+const millImages = entry.data.images ? await Promise.all(
+  entry.data.images.map(async (imagePath: string) => {
+    if (images[imagePath]) {
+      return (await images[imagePath]()).default
+    }
+    return null
+  })
+).then(results => results.filter(Boolean)) : []
 ---
 
 <Layout title={entry.data.name}>
   <div class="flex min-h-screen flex-col">
-    <Header showBackButton={true} backHref="/inventario" />
+    <Header />
 
-    <main class="flex-grow">
-      <div class="mx-auto max-w-3xl p-6 pt-8">
-        <!-- Title -->
-        <h1 class="text-3xl font-bold text-gray-900">{entry.data.name}</h1>
+    <main class="flex-grow bg-gray-50">
+      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        
+        <!-- Header Section -->
+        <div class="mb-8">
+          <div class="flex items-start justify-between mb-6">
+            <div class="flex-1">
+              <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl mb-2">
+                {entry.data.name}
+              </h1>
+              
+              <!-- Updated Date -->
+              <div class="text-sm text-gray-500 flex items-center mb-4">
+                <Icon name="mdi:update" class="h-4 w-4 mr-1" />
+                Actualizado o {entry.data.updatedDate.toLocaleDateString('gl-ES')}
+              </div>
+            </div>
+            
+            <!-- Status Badge -->
+            <div class="flex-shrink-0">
+              <div class={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${statusColor}`}>
+                <Icon name={statusIcon} class="h-4 w-4 mr-2" />
+                {estado}
+              </div>
+            </div>
+          </div>
 
-        <!-- Image Placeholder -->
-        <div
-          class="mt-4 flex h-64 w-full items-center justify-center bg-gray-200 text-gray-500"
-        >
-          <span>📷 Espazo reservado para o carrusel de imaxes</span>
+          <!-- Basic Info Cards -->
+          <div class="grid gap-4 sm:grid-cols-3 mb-6">
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center">
+                <Icon name="mdi:map-marker" class="h-5 w-5 text-gray-400 mr-3" />
+                <div>
+                  <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Localización</p>
+                  <p class="text-sm text-gray-900 font-medium">{entry.data.lugar}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center">
+                <Icon name="mdi:cog" class="h-5 w-5 text-gray-400 mr-3" />
+                <div>
+                  <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Tipoloxía</p>
+                  <p class="text-sm text-gray-900 font-medium">{entry.data.tipoloxia}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+              <div class="flex items-center">
+                <Icon name="mdi:account" class="h-5 w-5 text-gray-400 mr-3" />
+                <div>
+                  <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Propiedade</p>
+                  <p class="text-sm text-gray-900 font-medium">{entry.data.propiedade}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Muíño Info -->
-        <div class="prose prose-lg prose-gray mt-6 max-w-none space-y-4">
-          <ul class="list-none space-y-2">
-            <li>
-              <strong>📍 Ubicación:</strong>
-              {entry.data.ubicacion}
-            </li>
-            <li>
-              <strong>📍 Lugar:</strong>
-              {entry.data.lugar}
-            </li>
-            <li>
-              <strong>🗺 Coordenadas:</strong>
-              {entry.data.coordenadas}
-            </li>
-            <li>
-              <strong>🏗 Tipoloxía constructiva:</strong>
-              {entry.data.tipoloxia}
-            </li>
-            <li>
-              <strong>🏠 Tipo de propiedade:</strong>
-              {entry.data.propiedade}
-            </li>
-            <li>
-              <strong>🛠 Estado:</strong>
-              {entry.data.estado}
-            </li>
-            {
-              entry.data.outrosNomes && (
-                <li>
-                  <strong>🔖 Outros nomes:</strong> {entry.data.outrosNomes}
-                </li>
-              )
-            }
-          </ul>
+        <!-- Main Content Grid -->
+        <div class="grid gap-8 lg:grid-cols-3">
+          
+          <!-- Left Column - Images -->
+          <div class="lg:col-span-2">
+            <!-- Image Carousel -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                <Icon name="mdi:camera" class="h-5 w-5 mr-2" />
+                Galería de imaxes
+              </h2>
+              <MillImageCarousel images={millImages} alt={entry.data.name} />
+            </div>
+          </div>
+
+          <!-- Right Column - Mill Information -->
+          <div class="space-y-6">
+            
+            <!-- Map -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Icon name="mdi:map" class="h-5 w-5 mr-2" />
+                Localización
+              </h3>
+              
+              <!-- Address info -->
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg text-sm">
+                <div class="space-y-1">
+                  <div class="font-medium text-gray-900">{entry.data.ubicacion}</div>
+                  {entry.data.outrosNomes && (
+                    <div class="text-gray-600">Outros nomes: {entry.data.outrosNomes}</div>
+                  )}
+                  {entry.data.enUsoAta && (
+                    <div class="text-gray-600">En uso ata: {entry.data.enUsoAta.toLocaleDateString('gl-ES')}</div>
+                  )}
+                </div>
+              </div>
+              
+              <!-- Loading placeholder -->
+              <div class="h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 mill-map-loading">
+                <div class="text-center">
+                  <svg class="animate-spin h-6 w-6 text-gray-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 814 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <p class="text-xs">Cargando mapa...</p>
+                </div>
+              </div>
+              <MillMap 
+                coordinates={entry.data.coordenadas}
+                name={entry.data.name}
+                location={entry.data.lugar}
+                client:only="react" 
+              />
+            </div>
+
+            <!-- Current State Card -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Icon name={statusIcon} class={`h-5 w-5 mr-2 ${statusColor.includes('green') ? 'text-green-600' : statusColor.includes('orange') ? 'text-orange-600' : statusColor.includes('red') ? 'text-red-600' : 'text-gray-600'}`} />
+                Estado actual
+              </h3>
+              <p class="text-sm text-gray-600 leading-relaxed">
+                {entry.data.estado}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <!-- Description Content -->
-        <div class="prose prose-lg prose-gray mt-6 max-w-none">
-          <Content />
+        <!-- Content Section -->
+        <div class="mt-12">
+          <div class="bg-white rounded-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <Icon name="mdi:book-open" class="h-6 w-6 mr-3" />
+              Historia e documentación
+            </h2>
+            <div class="prose prose-lg prose-gray max-w-none">
+              <Content />
+            </div>
+            
+            <!-- Interview Previews -->
+            {entry.data.entrevistas && entry.data.entrevistas.length > 0 && (
+              <InterviewPreview interviewSlugs={entry.data.entrevistas} />
+            )}
+          </div>
         </div>
+
+
       </div>
     </main>
 

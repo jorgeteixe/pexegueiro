@@ -1,35 +1,59 @@
 ---
 import { Image } from 'astro:assets'
+import { Icon } from 'astro-icon/components'
 import bookSvg from '../assets/images/book.svg'
-
-const showBackButton = Astro.props.showBackButton || false
-const backHref = Astro.props.backHref || '/'
 ---
 
-<header class="w-full bg-gray-100 py-4">
-  <div class="mx-auto flex max-w-3xl items-center justify-between px-4 md:px-6">
-    <!-- Logo & Title -->
-    <div class="flex items-center space-x-4">
-      <Image src={bookSvg} alt="Logo" width={40} height={40} class="shrink-0" />
-      <div class="flex flex-col">
-        <h1 class="text-lg font-bold text-gray-900">A Galicia muiñeira</h1>
-        <h2 class="pr-2 text-sm text-gray-700">
-          E as xeracións que xiraron ao son dos muiños
-        </h2>
+<header class="w-full border-b border-gray-200 bg-white">
+  <div class="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+    <div class="flex items-center justify-between">
+      <!-- Logo & Title -->
+      <div class="flex items-center space-x-3">
+        <div class="rounded-lg bg-gray-50 p-2">
+          <Image
+            src={bookSvg}
+            alt="Logo A Galicia muiñeira"
+            width={32}
+            height={32}
+            class="shrink-0"
+          />
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-lg font-semibold text-gray-900 sm:text-xl">
+            A Galicia muiñeira
+          </h1>
+          <h2 class="max-w-xs text-xs text-gray-500 sm:max-w-none sm:text-sm">
+            E as xeracións que xiraron ao son dos muiños
+          </h2>
+        </div>
       </div>
-    </div>
 
-    <!-- Voltar Button (Optional) -->
-    {
-      showBackButton && (
+      <!-- Navigation -->
+      <nav class="flex items-center space-x-1">
         <a
-          href={backHref}
-          class="flex items-center space-x-2 rounded-lg border border-gray-300 px-3 py-1 text-sm text-gray-800 hover:bg-gray-200"
+          href="/"
+          class="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
         >
-          <span>←</span>
-          <span>Voltar</span>
+          <Icon name="mdi:home" class="mr-1 h-4 w-4" />
+          <span class="hidden sm:inline">Inicio</span>
         </a>
-      )
-    }
+
+        <a
+          href="/inventario"
+          class="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+        >
+          <Icon name="game-icons:water-mill" class="mr-1 h-4 w-4" />
+          <span class="hidden sm:inline">Inventario</span>
+        </a>
+
+        <a
+          href="/entrevistas"
+          class="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+        >
+          <Icon name="mdi:microphone" class="mr-1 h-4 w-4" />
+          <span class="hidden sm:inline">Entrevistas</span>
+        </a>
+      </nav>
+    </div>
   </div>
 </header>

@@ -15,12 +15,17 @@ const muinos = defineCollection({
     updatedDate: z.date(),
     ubicacion: z.string(),
     lugar: z.string(),
-    coordenadas: z.array(z.string()),
+    coordenadas: z.object({
+      lat: z.number(),
+      lng: z.number(),
+    }),
     tipoloxia: z.string(),
     propiedade: z.string(),
     estado: z.string(),
     enUsoAta: z.date().optional(),
     outrosNomes: z.string().optional(),
+    entrevistas: z.array(z.string()).optional(),
+    images: z.array(z.string()).optional(),
   }),
 })
 
@@ -29,6 +34,9 @@ const entrevistas = defineCollection({
   schema: z.object({
     title: z.string(),
     updatedDate: z.date(),
+    entrevistado: z.string().optional(),
+    idade: z.number().optional(),
+    temas: z.array(z.string()).optional(),
   }),
 })
 

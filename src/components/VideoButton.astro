@@ -1,0 +1,49 @@
+---
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  videoUrl: string
+  title?: string
+  compact?: boolean
+}
+
+const { videoUrl, title = "Ver vídeo da entrevista", compact = false } = Astro.props
+---
+
+{compact ? (
+  <a 
+    href={videoUrl} 
+    target="_blank"
+    rel="noopener noreferrer"
+    class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+  >
+    <Icon name="mdi:play-circle" class="h-4 w-4 mr-1.5" />
+    Ver vídeo
+    <Icon name="mdi:external-link" class="h-3 w-3 ml-1.5" />
+  </a>
+) : (
+  <div class="my-6 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 h-12 w-12 bg-blue-600 rounded-full flex items-center justify-center">
+          <Icon name="mdi:play" class="h-6 w-6 text-white" />
+        </div>
+        <div class="ml-4">
+          <h4 class="text-lg font-semibold text-gray-900">{title}</h4>
+          <p class="text-sm text-gray-600">Escoita a entrevista completa en vídeo</p>
+        </div>
+      </div>
+      
+      <a 
+        href={videoUrl} 
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        <Icon name="mdi:play-circle" class="h-5 w-5 mr-2" />
+        Ver vídeo
+        <Icon name="mdi:external-link" class="h-4 w-4 ml-2" />
+      </a>
+    </div>
+  </div>
+)}

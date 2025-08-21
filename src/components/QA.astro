@@ -1,0 +1,21 @@
+---
+interface Props {
+  question: string
+}
+
+const { question } = Astro.props
+---
+
+<div class="mb-8 border-l-4 border-blue-200 pl-6">
+  <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-start">
+    <span class="text-blue-600 mr-2">P:</span>
+    <span>{question}</span>
+  </h3>
+  
+  <div class="prose prose-gray max-w-none">
+    <div class="text-gray-800 leading-relaxed">
+      <span class="font-semibold text-blue-700 mr-2">R:</span>
+      <slot />
+    </div>
+  </div>
+</div>
